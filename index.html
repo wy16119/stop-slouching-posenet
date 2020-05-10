@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Sit straight!</title>
+<style>
+  .container {
+    width: 500px;
+    margin: auto;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+</head>
+
+<body>
+  <div class="container">
+    <video id="video" playsinline autoplay style=" -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    display: none;
+    ">
+    </video>
+    <canvas id="canvas"></canvas>
+    <span id="debug"></span>
+  </div>
+  <script src="camera.js"></script>
+</body>
+</html>
