@@ -29,7 +29,7 @@ getDistance = (point1, point2) => {
     + Math.pow(point1.position.y - point2.position.y, 2))
 }
 
-checkNeck = (keypoints) => {
+checkNeck = (keypoints, canvasCtx) => {
   const nose = findPart('nose', keypoints)
   const leftShoulder = findPart('leftShoulder', keypoints)
   const rightShoulder = findPart('rightShoulder', keypoints)
@@ -42,15 +42,20 @@ checkNeck = (keypoints) => {
   const noseToLeftShoulder = getDistance(nose, leftShoulder)
   const noseToRightShoulder = getDistance(nose, rightShoulder)
   const leftShoulderToRightShoulder = getDistance(leftShoulder, rightShoulder)
-  const ratio = noseToLeftShoulder / leftShoulderToRightShoulder
+  // Law of cosines to get the degree of the angel given length of all edges
+  const ratio =
+    (Math.pow(noseToLeftShoulder, 2) + Math.pow(noseToRightShoulder, 2)
+      - Math.pow(leftShoulderToRightShoulder, 2)) / (noseToLeftShoulder * noseToRightShoulder)
 
-  // debug.innerHTML = noseToLeftShoulder + '<br />'
-  //   + noseToRightShoulder + '<br />'
-  //   + leftShoulderToRightShoulder + '<br />'
-  //   + ratio
+  debug.innerHTML = ratio
 
-  if (ratio < 0.7) {
+  if (ratio < 0.3) {
+    drawLine(nose, leftShoulder, canvasCtx, 'magenta')
+    drawLine(nose, rightShoulder, canvasCtx, 'magenta')
     audio.play()
+  } else {
+    drawLine(nose, leftShoulder, canvasCtx)
+    drawLine(nose, rightShoulder, canvasCtx)
   }
 }
 
@@ -67,10 +72,9 @@ checkShoulder = (keypoints, canvasCtx) => {
     Math.abs(leftShoulder.position.y - rightShoulder.position.y) /
     Math.abs(leftShoulder.position.x - rightShoulder.position.x)
 
-  debug.innerHTML = ratio
+  // debug.innerHTML = ratio
 
-
-  if (ratio > 0.05) {
+  if (ratio > 0.06) {
     drawLine(leftShoulder, rightShoulder, canvasCtx, 'magenta')
     // audio.play()
   } else {
@@ -98,9 +102,8 @@ drawPoseInRealTime = (video, canvas, net) => {
     })
 
     checkShoulder(keypoints, canvasCtx)
+    checkNeck(keypoints, canvasCtx)
     canvasCtx.restore() // restore default state (not mirroring)
-
-    checkNeck(keypoints)
 
     window.requestAnimationFrame(drawPose)
   }
